@@ -108,7 +108,7 @@ class PostFeedViewController: UIViewController, UITableViewDataSource, UITableVi
     
     // MARK: Queries
     func getAllPosts(refreshing: Bool, refreshControl: UIRefreshControl?) {
-        let ref = FIRDatabase.database().reference(withPath: "posts")
+        let ref = Database.database().reference(withPath: "posts")
         MBProgressHUD.showAdded(to: self.view, animated: true)
         ref.observeSingleEvent(of: .value, with: { snapshot in
             if let dict = snapshot.value as? NSDictionary {
@@ -130,7 +130,7 @@ class PostFeedViewController: UIViewController, UITableViewDataSource, UITableVi
                     let timestamp = json["timestamp"].doubleValue
                     let date = Date(timeIntervalSince1970: timestamp/1000)
                     
-                    let usersReference = FIRDatabase.database().reference(withPath: "users").queryOrderedByKey().queryEqual(toValue: uid)
+                    let usersReference = Database.database().reference(withPath: "users").queryOrderedByKey().queryEqual(toValue: uid)
                     usersReference.observeSingleEvent(of: .value, with: { snapshot in
                         if let dict = snapshot.value as? NSDictionary {
                             let userInfo = dict.allValues[0]

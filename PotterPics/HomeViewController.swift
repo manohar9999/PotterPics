@@ -45,14 +45,14 @@ class HomeViewController: UIViewController {
                 } else {
                     let accessToken = FBSDKAccessToken.current()
                     guard let accessTokenString = accessToken?.tokenString else { return }
-                    let credential = FIRFacebookAuthProvider.credential(withAccessToken: accessTokenString)
+                    let credential = FacebookAuthProvider.credential(withAccessToken: accessTokenString)
                     
-                    FIRAuth.auth()?.signIn(with: credential) { (user, error) in
+                    Auth.auth().signIn(with: credential) { (user, error) in
                         if (error != nil) {
                             // handle error
                             print(error ?? "Error")
                         } else {
-                            let ref = FIRDatabase.database().reference(fromURL: "https://potterpics-2bcbc.firebaseio.com")
+                            let ref = Database.database().reference(fromURL: "https://potterpics-2bcbc.firebaseio.com")
                             
                             // guard for user id
                             guard let uid = user?.uid else {

@@ -43,15 +43,15 @@ class PostViewController: UIViewController, ModalViewControllerDelegate, UIImage
         let postImage = self.imagetoUpload.image
         let caption = self.captionTextField.text
         
-        let storage = FIRStorage.storage()
+        let storage = Storage.storage()
         let data = UIImagePNGRepresentation(postImage!)
         
         // guard for user id
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+        guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         let photosRef = storage.reference().child("posts")
-        let usersRef = FIRDatabase.database().reference().child("users")
+        let usersRef = Database.database().reference().child("users")
         var currentNumPosts: Int?
         // increase post count
         usersRef.child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -66,7 +66,7 @@ class PostViewController: UIViewController, ModalViewControllerDelegate, UIImage
         let imageName = NSUUID().uuidString
         let photoRef = photosRef.child("\(uid)")
         
-        photoRef.child("\(imageName)").put(data!, metadata: nil) { (metaData,error) in
+        photoRef.child("\(imageName)").putData(data!, metadata: nil) { (metaData,error) in
             if let error = error {
                 print("there was an error")
                 print(error.localizedDescription)
@@ -74,10 +74,10 @@ class PostViewController: UIViewController, ModalViewControllerDelegate, UIImage
             } else {
                 // store downloadURL
                 let downloadURL = metaData!.downloadURL()!.absoluteString
-                let values: Dictionary<String, Any> = ["uid": uid, "caption": caption ?? "", "download_url": downloadURL, "timestamp": FIRServerValue.timestamp()]
+                let values: Dictionary<String, Any> = ["uid": uid, "caption": caption ?? "", "download_url": downloadURL, "timestamp": ServerValue.timestamp()]
                 
                 // store downloadURL at database
-                let databaseRef = FIRDatabase.database().reference()
+                let databaseRef = Database.database().reference()
                 let path = databaseRef.child("posts").childByAutoId()
                 path.setValue(values) { (error, ref) -> Void in
                     if error != nil {
@@ -95,7 +95,7 @@ class PostViewController: UIViewController, ModalViewControllerDelegate, UIImage
     }
     
     func updateNumPosts(currentNumPosts: Int, uid: String) {
-        let usersRef = FIRDatabase.database().reference().child("users")
+        let usersRef = Database.database().reference().child("users")
         let newCount = currentNumPosts + 1
         let values = ["postCount": newCount]
         usersRef.child(uid).updateChildValues(values)

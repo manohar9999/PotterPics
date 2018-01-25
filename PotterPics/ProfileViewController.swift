@@ -18,7 +18,7 @@ import MBProgressHUD
 class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var user: User?
-    var ref: FIRDatabaseReference! = FIRDatabase.database().reference()
+    var ref: DatabaseReference! = Database.database().reference()
     var posts = [Post]()
     typealias CompletionHandler = (_ success:Bool) -> Void
     
@@ -39,7 +39,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.view.backgroundColor = stripCol
         
         // set the UID so that we know if it's the current user
-        if let currentUser = FIRAuth.auth()?.currentUser?.uid {
+        if let currentUser = Auth.auth().currentUser?.uid {
             configureHeader(currentID: currentUser, completionHandler: { (success) -> Void in
                 if success {
                     // header success
@@ -93,7 +93,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     @IBAction func returnToProfile(_ sender: Any) {
         self.logoutButton.isHidden = false
-        if let currentUser = FIRAuth.auth()?.currentUser?.uid {
+        if let currentUser = Auth.auth().currentUser?.uid {
             configureHeader(currentID: currentUser,  completionHandler: { (success) -> Void in
                 if success {
                     // header success
@@ -115,9 +115,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @IBAction func logoutUser(_ sender: UIButton) {
-        let firebaseAuth = FIRAuth.auth()
+        let firebaseAuth = Auth.auth()
         do {
-            try firebaseAuth?.signOut()
+            try firebaseAuth.signOut()
             FBSDKLoginManager().logOut()
             self.dismiss(animated: true, completion: nil)
             
@@ -258,7 +258,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     // get current user's posts
     func getUserPosts(currentID: String?, refreshing: Bool, refreshControl: UIRefreshControl?) {
         if let uid = currentID {
-           let ref = FIRDatabase.database().reference(withPath: "posts").queryOrdered(byChild: "uid").queryEqual(toValue: uid)
+            let ref = Database.database().reference(withPath: "posts").queryOrdered(byChild: "uid").queryEqual(toValue: uid)
             
             MBProgressHUD.showAdded(to: self.view, animated: true)
             

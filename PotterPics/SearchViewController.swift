@@ -29,8 +29,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func getUsers() {
-        let DB = FIRDatabase.database().reference()
-        let usersRef : FIRDatabaseReference = DB.child("users")
+        let DB = Database().reference()
+        let usersRef : DatabaseReference = DB.child("users")
         usersRef.observe(.value, with: { (snapshot) in
             if let dict = snapshot.value as? NSDictionary {
                 for item in dict {
@@ -44,7 +44,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     
                     // create User, add to users array
                     let user = User(name: name, email: email, facebookID: fbID, userID: firebaseID, profPic: profPicURL, postCount: numPosts)
-                    if let currentID = FIRAuth.auth()?.currentUser?.uid {
+                    if let currentID = Auth.auth().currentUser?.uid {
                         if(firebaseID != currentID) {
                             self.users.append(user)
                             self.filteredUsers = self.users
